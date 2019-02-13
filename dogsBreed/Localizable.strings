@@ -1,0 +1,26 @@
+/* 
+  Localizable.strings
+  dogsBreed
+
+  Created by Arthur Jatoba on 12/02/19.
+  Copyright © 2019 Arthur Jatoba. All rights reserved.
+*/
+
+
+//Common
+"Common.Alert.Error.Title" = "Erro";
+"Common.Ok" = "OK";
+"Common.NoFavorites" = "You don't have any favorite breed";
+"Common.App.Title" = "Dog Breeds";
+"Common.App.Favorites.Title" = "Favorites";
+
+
+//APIError
+"ApiError.NoInternetConnection" = "Sem conexão, certifique-se que está conectado e tente novamente.";
+
+
+//TabBar
+
+"TabBar.Home.Title" = "HOME";
+"TabBar.Favorites.Title" = "FAVORITES";
+"welcome" = "falaaa bucetao";
