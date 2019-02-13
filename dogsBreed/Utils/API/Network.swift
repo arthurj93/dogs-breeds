@@ -9,6 +9,11 @@
 import Foundation
 import Alamofire
 
+protocol handleErrorAPI {
+    func handleError(_ error: Error)
+    func validaFieldWithWebServiceErrors(_ error: Network.ErrorResponse.Item)
+}
+
 enum Network {
     enum Error: Swift.Error {
         case api(error: Swift.Error, response: ErrorResponse)

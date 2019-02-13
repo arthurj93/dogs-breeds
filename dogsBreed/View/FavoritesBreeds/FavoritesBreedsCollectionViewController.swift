@@ -59,7 +59,7 @@ class FavoritesBreedsCollectionViewController: UICollectionViewController, UICol
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ListBreedCell.cellId, for: indexPath) as! ListBreedCell
         
         if breedList.count == 0 {
-            cell.setup(name: AppStrings.common_no_favortes)
+            cell.setup(name: AppStrings.common_no_favorites)
         } else {
            cell.setup(name: breedList[indexPath.item].name ?? "")
         }

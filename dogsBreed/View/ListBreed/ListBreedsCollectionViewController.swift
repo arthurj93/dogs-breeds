@@ -18,8 +18,9 @@ class ListBreedsCollectionViewController: UICollectionViewController, UICollecti
         static let lineSpacing: CGFloat = 5
         static let padding: CGFloat = 32
         static let collectionViewTopPadding: CGFloat = 16
+        static let cellCount = 1
     }
-    
+
     var breedList: [String] = [] {
         didSet {
             collectionView.reloadData()
@@ -43,13 +44,21 @@ class ListBreedsCollectionViewController: UICollectionViewController, UICollecti
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if breedList.count == 0 {
+            return Constants.cellCount
+        }
+        
         return breedList.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ListBreedCell.cellId, for: indexPath) as! ListBreedCell
     
-        cell.setup(name: breedList[indexPath.item])
+        if breedList.count == 0 {
+            cell.setup(name: AppStrings.apiError_refresher)
+        } else {
+            cell.setup(name: breedList[indexPath.item])
+        }
     
         return cell
     }
@@ -59,13 +68,18 @@ class ListBreedsCollectionViewController: UICollectionViewController, UICollecti
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let breedName = breedList[indexPath.item]
-        let layout = UICollectionViewFlowLayout()
-        let breedImageController = BreedImagesCollectionViewController(collectionViewLayout: layout,
-                                                                       breedName: breedName)
         
-        self.navigationController?.pushViewController(breedImageController, animated: true)
+        if breedList.count != 0 {
+            let breedName = breedList[indexPath.item]
+            let layout = UICollectionViewFlowLayout()
+            let breedImageController = BreedImagesCollectionViewController(collectionViewLayout: layout,
+                                                                           breedName: breedName)
+            
+            self.navigationController?.pushViewController(breedImageController, animated: true)
+            return
+        }
         
+        getListBreed()
     }
     
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -94,14 +108,14 @@ extension ListBreedsCollectionViewController: handleErrorAPI {
                 response.errors.forEach(validaFieldWithWebServiceErrors(_:))
             } else {
                 print(response.message)
-                showError("erro loco", message: response.message)
+                showError(AppStrings.common_alert_warning_title, message: response.message)
             }
             
         case .notConnectedToInternet:
-            print("error de internet")
             showError(AppStrings.common_alert_error_title, message: AppStrings.apiError_noInternetConnection)
             
         case let .http(error):
+            showError(AppStrings.common_alert_error_title, message: error.localizedDescription)
             log("Unhandled error: \(error.localizedDescription)", event: .error)
         }
     }
@@ -111,7 +125,7 @@ extension ListBreedsCollectionViewController: handleErrorAPI {
     }
     
     
-    func getListBreed() {
+    @objc func getListBreed() {
         startAnimating()
         network.request(API.Breed.getBreeds()) { (listBreed: [String]?, error: Error?) in
             if let error = error{

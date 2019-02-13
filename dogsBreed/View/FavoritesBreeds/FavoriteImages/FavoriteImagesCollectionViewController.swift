@@ -17,6 +17,7 @@ class FavoriteImagesCollectionViewController: UICollectionViewController, UIColl
         static let itemSpacing: CGFloat = 0
         static let lineSpacing: CGFloat = 2
         static let countImagesLimit = 4
+        static let collectionViewTopPadding: CGFloat = 16
     }
     
     let breedRealm = BreedDataImplementation.shared()
@@ -45,7 +46,8 @@ class FavoriteImagesCollectionViewController: UICollectionViewController, UIColl
         super.viewDidLoad()
         self.collectionView!.register(BreedImageCell.self, forCellWithReuseIdentifier: BreedImageCell.cellId)
         collectionView?.backgroundColor = #colorLiteral(red: 0.9176028371, green: 0.908431828, blue: 0.7742337584, alpha: 1)
-        
+        collectionView?.contentInset = .init(top: Constants.collectionViewTopPadding, left: 0, bottom: 0, right: 0)
+        collectionView?.scrollIndicatorInsets = .init(top: Constants.collectionViewTopPadding, left: 0, bottom: 0, right: 0)
         setupNavigationBar(title: breedName.capitalized, titleColor: #colorLiteral(red: 0.2052696645, green: 0.2191743255, blue: 0.23270455, alpha: 1), barTintColor: #colorLiteral(red: 0.8413519263, green: 0.8386471868, blue: 0.7956568599, alpha: 1))
         setupNavigationBarButton(breedName: breedName.capitalized, selector: #selector(checkFavorite))
     }

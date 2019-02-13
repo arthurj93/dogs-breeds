@@ -8,14 +8,7 @@
 
 import UIKit
 
-protocol handleErrorAPI {
-    func handleError(_ error: Error)
-    func validaFieldWithWebServiceErrors(_ error: Network.ErrorResponse.Item)
-}
-
 class MainTabBarController: UITabBarController {
-    
-    let network = APIManager.shared()
     
     override func viewDidLoad() {
         super.viewDidLoad()

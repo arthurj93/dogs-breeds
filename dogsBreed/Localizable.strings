@@ -8,7 +8,8 @@
 
 
 //Common
-"Common.Alert.Error.Title" = "Erro";
+"Common.Alert.Error.Title" = "Error";
+"Common.Alert.Warning.Title" = "Warning";
 "Common.Ok" = "OK";
 "Common.NoFavorites" = "You don't have any favorite breed";
 "Common.App.Title" = "Dog Breeds";
@@ -16,11 +17,9 @@
 
 
 //APIError
-"ApiError.NoInternetConnection" = "Sem conexão, certifique-se que está conectado e tente novamente.";
-
+"ApiError.NoInternetConnection" = "No internet connection, make sure you're connected and try again.";
+"ApiError.Refresher" = "Click to refresh data.";
 
 //TabBar
-
 "TabBar.Home.Title" = "HOME";
 "TabBar.Favorites.Title" = "FAVORITES";
-"welcome" = "falaaa bucetao";

@@ -18,11 +18,13 @@ enum AppStrings {
     //Common
     static let common_alert_error_title = localized("Common.Alert.Error.Title")
     static let common_ok = localized("Common.Ok")
-    static let common_no_favortes = localized("Common.NoFavorites")
+    static let common_no_favorites = localized("Common.NoFavorites")
     static let common_app_name = localized("Common.App.Title")
     static let common_favorites_title = localized("Common.App.Favorites.Title")
+    static let common_alert_warning_title = localized("Common.Alert.Warning.Title")
     //Api Errors
     static let apiError_noInternetConnection = localized("ApiError.NoInternetConnection")
+    static let apiError_refresher = localized("ApiError.Refresher")
     
     
     //TabBar

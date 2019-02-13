@@ -18,6 +18,10 @@ class BreedImagesCollectionViewController: UICollectionViewController, UICollect
         static let itemSpacing: CGFloat = 0
         static let lineSpacing: CGFloat = 2
         static let countImagesLimit = 4
+        static let cellCount = 1
+        static let paddingListCell: CGFloat = 32
+        static let cellHeight: CGFloat = 50
+        static let collectionViewTopPadding: CGFloat = 16
     }
     
     let network = APIManager.shared()
@@ -30,15 +34,11 @@ class BreedImagesCollectionViewController: UICollectionViewController, UICollect
     }
     
     let breedName: String
-    var images = [UIImage]()
-    
     
     init(collectionViewLayout layout: UICollectionViewLayout,
          breedName: String) {
         self.breedName = breedName
         super.init(collectionViewLayout: layout)
-        
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -47,28 +47,46 @@ class BreedImagesCollectionViewController: UICollectionViewController, UICollect
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.collectionView!.register(BreedImageCell.self, forCellWithReuseIdentifier: BreedImageCell.cellId)
+        self.collectionView.register(BreedImageCell.self, forCellWithReuseIdentifier: BreedImageCell.cellId)
+        self.collectionView.register(UINib(nibName: ListBreedCell.cellId, bundle: nil), forCellWithReuseIdentifier: ListBreedCell.cellId)
+        
         collectionView?.backgroundColor = #colorLiteral(red: 0.9176028371, green: 0.908431828, blue: 0.7742337584, alpha: 1)
+        collectionView?.contentInset = .init(top: Constants.collectionViewTopPadding, left: 0, bottom: 0, right: 0)
+        collectionView?.scrollIndicatorInsets = .init(top: Constants.collectionViewTopPadding, left: 0, bottom: 0, right: 0)
         
         setupNavigationBar(title: breedName.capitalized, titleColor: #colorLiteral(red: 0.2052696645, green: 0.2191743255, blue: 0.23270455, alpha: 1), barTintColor: #colorLiteral(red: 0.8413519263, green: 0.8386471868, blue: 0.7956568599, alpha: 1))
         setupNavigationBarButton(breedName: breedName.capitalized, selector: #selector(checkFavorite))
-        getImages(breed: breedName)
-
+        getImages()
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if breedStrings.count == 0 {
+            return Constants.cellCount
+        }
+        
         return breedStrings.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if breedStrings.count == 0 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ListBreedCell.cellId, for: indexPath) as! ListBreedCell
+            cell.setup(name: AppStrings.apiError_refresher)
+            return cell
+        }
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BreedImageCell.cellId, for: indexPath) as! BreedImageCell
         
         cell.breedImage = breedStrings[indexPath.item]
-    
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        if breedStrings.count == 0 {
+            return CGSize(width: collectionView.bounds.width - Constants.paddingListCell, height: Constants.cellHeight)
+        }
+        
         return CGSize(width: view.frame.width/Constants.widthDivisor - Constants.padding, height: view.frame.width/Constants.widthDivisor - Constants.padding)
     }
     
@@ -90,10 +108,16 @@ class BreedImagesCollectionViewController: UICollectionViewController, UICollect
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let url = breedStrings[indexPath.item]
-        let breedImageDetailController = BreedImageDetailViewController()
-        breedImageDetailController.breedImage = url
-        self.navigationController?.pushViewController(breedImageDetailController, animated: true)
+        
+        if breedStrings.count != 0 {
+            let url = breedStrings[indexPath.item]
+            let breedImageDetailController = BreedImageDetailViewController()
+            breedImageDetailController.breedImage = url
+            self.navigationController?.pushViewController(breedImageDetailController, animated: true)
+            return
+        }
+        
+        getImages()
     }
     
 }
@@ -138,6 +162,10 @@ extension BreedImagesCollectionViewController: BreedDataForVC {
         }
         stopAnimating()
     }
+    
+    @objc func getImages() {
+        getImagesBy(breed: breedName)
+    }
 }
 
 extension BreedImagesCollectionViewController: handleErrorAPI {
@@ -154,14 +182,14 @@ extension BreedImagesCollectionViewController: handleErrorAPI {
                 response.errors.forEach(validaFieldWithWebServiceErrors(_:))
             } else {
                 print(response.message)
-                showError("erro loco", message: response.message)
+                showError(AppStrings.common_alert_warning_title, message: response.message)
             }
             
         case .notConnectedToInternet:
-            print("error de internet")
             showError(AppStrings.common_alert_error_title, message: AppStrings.apiError_noInternetConnection)
             
         case let .http(error):
+            showError(AppStrings.common_alert_error_title, message: error.localizedDescription)
             log("Unhandled error: \(error.localizedDescription)", event: .error)
         }
     }
@@ -170,7 +198,7 @@ extension BreedImagesCollectionViewController: handleErrorAPI {
         print(error.messages.first)
     }
     
-    func getImages(breed: String) {
+    func getImagesBy(breed: String) {
         startAnimating()
         network.request(API.Breed.getImages(breed: breed)) { (images: [String]?, error: Error?) in
             if let error = error{
